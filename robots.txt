@@ -4,4 +4,4 @@ Disallow: /api/
 
 # Once your domain is live, run:  python tools/generate_sitemap.py https://your-domain.com
 # then uncomment and update the line below.
-# Sitemap: https://your-domain.com/sitemap.xml
+Sitemap: https://emediong-odiong.vercel.app/sitemap.xml

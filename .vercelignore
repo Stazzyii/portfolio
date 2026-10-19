@@ -1,0 +1,4 @@
+tools/
+qa-screens/
+.env*
+!.env.example

@@ -18,7 +18,7 @@ window.PORTFOLIO = {
      (no trailing slash). Used for canonical URLs and social sharing.
      ------------------------------------------------------------------- */
   site: {
-    siteUrl: "",
+    siteUrl: "https://emediong-odiong.vercel.app",
   },
 
   /* -------------------------------------------------------------------

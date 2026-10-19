@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Page Not Found — Emediong Ndong Odiong</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#07080b" />
+  <!-- Root-relative paths so this page works at any URL depth on a web server. -->
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>
+    (function () {
+      document.documentElement.classList.add("js");
+      try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+    })();
+  </script>
+</head>
+<body data-page="404" data-home="/">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" id="site-header">
+    <nav class="container nav" aria-label="Primary">
+      <a href="/#home" class="brand" aria-label="Emediong Ndong Odiong — home">
+        <span class="brand-mark" aria-hidden="true">EO</span>
+        <span class="brand-name">Emediong<span>.dev</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/#home">Home</a></li>
+        <li><a href="/#about">About</a></li>
+        <li><a href="/#skills">Skills</a></li>
+        <li><a href="/#experience">Experience</a></li>
+        <li><a href="/#projects">Projects</a></li>
+        <li><a href="/#services">Services</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Switch to light theme" data-theme-toggle>
+          <span class="icon-moon" data-icon="moon"></span><span class="icon-sun" data-icon="sun"></span>
+        </button>
+        <a class="btn btn-primary btn-sm nav-cta" href="/#contact">Let's Talk</a>
+        <button class="icon-btn menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
+          <span data-icon="menu"></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" hidden>
+    <a class="mobile-link" href="/#home">Home <span data-icon="arrow-right"></span></a>
+    <a class="mobile-link" href="/#about">About <span data-icon="arrow-right"></span></a>
+    <a class="mobile-link" href="/#skills">Skills <span data-icon="arrow-right"></span></a>
+    <a class="mobile-link" href="/#experience">Experience <span data-icon="arrow-right"></span></a>
+    <a class="mobile-link" href="/#projects">Projects <span data-icon="arrow-right"></span></a>
+    <a class="mobile-link" href="/#services">Services <span data-icon="arrow-right"></span></a>
+    <a class="mobile-link" href="/#contact">Contact <span data-icon="arrow-right"></span></a>
+    <div class="mobile-cta">
+      <a class="btn btn-whatsapp" href="https://wa.me/2348105182333" target="_blank" rel="noopener" data-wa-link><span data-icon="whatsapp"></span> Chat on WhatsApp</a>
+      <a class="btn" href="tel:+2348105182333" data-tel-link><span data-icon="phone"></span> Call Me</a>
+    </div>
+  </div>
+
+  <main id="main" class="nf">
+    <div>
+      <div class="nf-code grad-text" aria-hidden="true">404</div>
+      <h1>This page doesn't exist.</h1>
+      <p>The link may be broken, or the page may have moved. Let's get you back on track.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/"><span data-icon="arrow-left"></span> Back to home</a>
+        <a class="btn" href="/#projects">View projects</a>
+        <a class="btn btn-whatsapp" href="https://wa.me/2348105182333" target="_blank" rel="noopener" data-wa-link><span data-icon="whatsapp"></span> WhatsApp Me</a>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer" id="site-footer"></footer>
+  <div class="toast" role="status" aria-live="polite" data-toast><span data-icon="check"></span><span data-toast-text></span></div>
+  <script src="/assets/js/data.js"></script>
+  <script src="/assets/js/icons.js"></script>
+  <script src="/assets/js/common.js"></script>
+</body>
+</html>

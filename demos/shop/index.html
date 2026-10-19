@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lumen Supply — E-Commerce Demo by Emediong Ndong Odiong</title>
+  <meta name="description" content="A working e-commerce storefront demo with search, filters, cart and checkout. Built by Emediong Ndong Odiong." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" />
+  <style>
+    :root {
+      --bg: #f7f4ef; --surface: #ffffff; --ink: #1d1a16; --ink-2: #5e574d; --ink-3: #8c8478;
+      --line: #e7e0d5; --accent: #1f4d3a; --accent-2: #2f6b52; --sale: #b4532a; --focus: #2f6b52;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    .demo-bar { background: #111; color: #ddd; font-size: 13px; }
+    .demo-bar .wrap { display: flex; gap: 12px; align-items: center; justify-content: space-between; min-height: 40px; flex-wrap: wrap; padding-block: 6px; }
+    .demo-bar a { color: #fff; font-weight: 600; text-decoration: none; }
+    .demo-bar a:hover { text-decoration: underline; }
+
+    header.shop-head { position: sticky; top: 0; z-index: 20; background: rgba(247, 244, 239, 0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    .head-row { display: flex; align-items: center; gap: 20px; height: 68px; }
+    .logo { font-family: Fraunces, Georgia, serif; font-size: 24px; font-weight: 600; letter-spacing: -0.02em; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo i { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); display: inline-block; }
+    .search { flex: 1; max-width: 420px; margin-left: auto; position: relative; }
+    .search input { width: 100%; height: 42px; border-radius: 999px; border: 1px solid var(--line); background: #fff; padding: 0 16px 0 40px; }
+    .search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-3); }
+    .cart-btn { position: relative; display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 999px; border: 0; background: var(--accent); color: #fff; font-weight: 600; }
+    .cart-btn:hover { background: var(--accent-2); }
+    .badge { min-width: 22px; height: 22px; border-radius: 999px; background: #fff; color: var(--accent); font-size: 12px; font-weight: 700; display: inline-grid; place-items: center; padding: 0 6px; }
+    .badge.bump { animation: bump 0.35s ease; }
+    @keyframes bump { 50% { transform: scale(1.3); } }
+
+    .hero { padding: 48px 0 28px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; align-items: end; }
+    .hero h1 { font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: clamp(34px, 5vw, 56px); line-height: 1.04; letter-spacing: -0.03em; margin: 0; }
+    .hero p { color: var(--ink-2); margin: 0; max-width: 420px; }
+    .perks { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; font-size: 13px; color: var(--ink-2); }
+    .perks span::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 14px 0 22px; border-top: 1px solid var(--line); }
+    .cats { display: flex; flex-wrap: wrap; gap: 8px; }
+    .cat { height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-size: 14px; font-weight: 500; }
+    .cat[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .sort { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-2); }
+    .sort select { height: 36px; border-radius: 10px; border: 1px solid var(--line); background: #fff; padding: 0 10px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 22px; padding-bottom: 64px; }
+    .card { background: var(--surface); border-radius: 18px; overflow: hidden; border: 1px solid var(--line); display: flex; flex-direction: column; transition: transform 0.25s, box-shadow 0.25s; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 18px 30px -18px rgba(40, 30, 10, 0.3); }
+    .art { aspect-ratio: 1 / 0.85; display: grid; place-items: center; position: relative; }
+    .art svg { width: 46%; height: auto; }
+    .tag { position: absolute; left: 12px; top: 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; background: #fff; padding: 4px 9px; border-radius: 999px; }
+    .tag.sale { background: var(--sale); color: #fff; }
+    .info { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .info small { color: var(--ink-3); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .info h3 { margin: 0; font-size: 16px; font-weight: 600; }
+    .price { display: flex; gap: 8px; align-items: baseline; margin-top: 2px; }
+    .price strong { font-size: 16px; }
+    .price s { color: var(--ink-3); font-size: 13px; }
+    .add { margin-top: 12px; height: 40px; border-radius: 10px; border: 1px solid var(--ink); background: transparent; font-weight: 600; font-size: 14px; transition: background 0.2s, color 0.2s; }
+    .add:hover { background: var(--ink); color: #fff; }
+    .add.added { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .empty { grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--ink-2); border: 1px dashed var(--line); border-radius: 18px; }
+
+    /* Drawer */
+    .scrim { position: fixed; inset: 0; background: rgba(20, 16, 10, 0.45); opacity: 0; visibility: hidden; transition: 0.25s; z-index: 40; }
+    .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100%); background: #fff; z-index: 50; transform: translateX(100%); transition: transform 0.3s cubic-bezier(.22,1,.36,1); display: flex; flex-direction: column; visibility: hidden; }
+    .open .scrim { opacity: 1; visibility: visible; }
+    .open .drawer { transform: none; visibility: visible; }
+    .drawer-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+    .drawer-head h2 { margin: 0; font-size: 18px; }
+    .x { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line); background: #fff; font-size: 20px; line-height: 1; }
+    .lines { flex: 1; overflow-y: auto; padding: 8px 20px; }
+    .line { display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .thumb { width: 64px; height: 64px; border-radius: 12px; display: grid; place-items: center; }
+    .thumb svg { width: 60%; }
+    .line h4 { margin: 0; font-size: 14px; }
+    .line small { color: var(--ink-3); }
+    .qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; margin-top: 6px; }
+    .qty button { width: 30px; height: 30px; border: 0; background: none; font-size: 16px; }
+    .qty span { min-width: 24px; text-align: center; font-size: 14px; font-weight: 600; }
+    .remove { border: 0; background: none; color: var(--ink-3); font-size: 13px; text-decoration: underline; }
+    .drawer-foot { padding: 18px 20px; border-top: 1px solid var(--line); display: grid; gap: 10px; }
+    .row { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-2); }
+    .row.total { font-size: 17px; color: var(--ink); font-weight: 700; }
+    .primary { height: 48px; border-radius: 12px; border: 0; background: var(--accent); color: #fff; font-weight: 600; font-size: 15px; }
+    .primary:hover { background: var(--accent-2); }
+    .primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .note { font-size: 12px; color: var(--ink-3); text-align: center; }
+
+    /* Checkout dialog */
+    dialog { border: 0; border-radius: 20px; padding: 0; width: min(520px, calc(100% - 24px)); max-height: calc(100vh - 24px); box-shadow: 0 30px 80px rgba(0,0,0,0.3); }
+    dialog::backdrop { background: rgba(20, 16, 10, 0.5); }
+    .dlg { padding: 24px; }
+    .dlg h2 { margin: 0 0 4px; font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 26px; }
+    .dlg p.sub { margin: 0 0 18px; color: var(--ink-2); font-size: 14px; }
+    .fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .f { display: grid; gap: 5px; }
+    .f.full { grid-column: 1/-1; }
+    .f label { font-size: 13px; font-weight: 600; }
+    .f input, .f select { height: 44px; border-radius: 10px; border: 1px solid var(--line); padding: 0 12px; background: #fff; }
+    .f.err input, .f.err select { border-color: var(--sale); }
+    .f .msg { font-size: 12px; color: var(--sale); min-height: 0; }
+    .dlg-actions { display: flex; gap: 10px; margin-top: 18px; }
+    .dlg-actions .primary { flex: 1; }
+    .ghost { height: 48px; padding: 0 18px; border-radius: 12px; border: 1px solid var(--line); background: #fff; font-weight: 600; }
+    .success { text-align: center; padding: 12px 0; }
+    .success .tick { width: 64px; height: 64px; border-radius: 50%; background: #e3efe9; color: var(--accent); display: grid; place-items: center; margin: 0 auto 14px; font-size: 30px; }
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 20px); background: var(--ink); color: #fff; padding: 11px 18px; border-radius: 12px; font-size: 14px; opacity: 0; transition: 0.3s; z-index: 60; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    footer { border-top: 1px solid var(--line); padding: 24px 0; font-size: 13px; color: var(--ink-3); }
+    @media (max-width: 720px) {
+      .hero { grid-template-columns: 1fr; padding-top: 28px; }
+      .head-row { flex-wrap: wrap; height: auto; padding: 12px 0; gap: 12px; }
+      .search { order: 3; max-width: none; flex-basis: 100%; }
+      .cart-btn { margin-left: auto; }
+      .fgrid { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="demo-bar"><div class="wrap"><span>🧪 Demo project with sample products. No real payments or orders.</span><a href="../../project.html?p=e-commerce-store">← Case study &amp; portfolio</a></div></div>
+
+  <header class="shop-head">
+    <div class="wrap head-row">
+      <a class="logo" href="./"><i></i>Lumen Supply</a>
+      <label class="search">
+        <span class="sr-only">Search products</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Search lamps, mugs, chairs…" autocomplete="off" />
+      </label>
+      <button class="cart-btn" id="cartBtn" aria-haspopup="dialog" aria-controls="drawer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6 5 3H2"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+        Cart <span class="badge" id="count" aria-label="0 items">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Thoughtful objects for calm, everyday living.</h1>
+        <div class="perks"><span>Free delivery over ₦100,000</span><span>14-day returns</span><span>Pay on delivery</span></div>
+      </div>
+      <p>Simple, well-made pieces for your kitchen, living room and workspace, chosen to last.</p>
+    </section>
+
+    <div class="toolbar">
+      <div class="cats" id="cats" role="group" aria-label="Filter by category"></div>
+      <label class="sort">Sort by
+        <select id="sort">
+          <option value="featured">Featured</option>
+          <option value="low">Price: low to high</option>
+          <option value="high">Price: high to low</option>
+          <option value="name">Name A–Z</option>
+        </select>
+      </label>
+    </div>
+    <p class="sr-only" aria-live="polite" id="resultMsg"></p>
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <footer><div class="wrap">Lumen Supply is a fictional store created as a portfolio demo by Emediong Ndong Odiong.</div></footer>
+
+  <div id="cartRoot">
+    <div class="scrim" id="scrim"></div>
+    <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+      <div class="drawer-head"><h2 id="cartTitle">Your cart</h2><button class="x" id="closeCart" aria-label="Close cart">×</button></div>
+      <div class="lines" id="lines"></div>
+      <div class="drawer-foot">
+        <div class="row"><span>Subtotal</span><span id="sub">₦0</span></div>
+        <div class="row"><span>Delivery</span><span id="ship">₦0</span></div>
+        <div class="row total"><span>Total</span><span id="total">₦0</span></div>
+        <button class="primary" id="checkoutBtn">Checkout</button>
+        <p class="note">Demo store: no payment will be taken.</p>
+      </div>
+    </aside>
+  </div>
+
+  <dialog id="checkout" aria-labelledby="coTitle">
+    <div class="dlg" id="dlgBody"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+  (function () {
+    "use strict";
+    const ICONS = {
+      lamp: '<path d="M30 10h40l14 34H16z" fill="currentColor" opacity=".9"/><rect x="47" y="44" width="6" height="36" fill="currentColor"/><rect x="30" y="80" width="40" height="8" rx="4" fill="currentColor"/>',
+      mug: '<rect x="18" y="24" width="48" height="56" rx="8" fill="currentColor"/><path d="M66 36h8a10 10 0 0 1 0 20h-8" stroke="currentColor" stroke-width="7" fill="none"/>',
+      chair: '<rect x="26" y="12" width="48" height="40" rx="10" fill="currentColor"/><rect x="20" y="50" width="60" height="12" rx="6" fill="currentColor"/><rect x="26" y="60" width="6" height="28" fill="currentColor"/><rect x="68" y="60" width="6" height="28" fill="currentColor"/>',
+      plant: '<path d="M50 52C30 50 22 34 24 16c18 2 26 18 26 36zM50 52c20-2 28-18 26-36-18 2-26 18-26 36z" fill="currentColor" opacity=".85"/><path d="M30 56h40l-6 32H36z" fill="currentColor"/>',
+      vase: '<path d="M38 10h24v12c12 8 16 20 14 34-2 18-12 30-26 32-14-2-24-14-26-32-2-14 2-26 14-34z" fill="currentColor"/>',
+      clock: '<circle cx="50" cy="50" r="38" fill="currentColor"/><path d="M50 28v24l14 8" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none"/>',
+      pot: '<rect x="14" y="38" width="72" height="42" rx="12" fill="currentColor"/><rect x="30" y="26" width="40" height="10" rx="5" fill="currentColor"/><rect x="4" y="48" width="12" height="8" rx="4" fill="currentColor"/><rect x="84" y="48" width="12" height="8" rx="4" fill="currentColor"/>',
+      bottle: '<rect x="40" y="6" width="20" height="14" rx="3" fill="currentColor"/><path d="M36 22h28v8c8 4 10 10 10 18v36a8 8 0 0 1-8 8H34a8 8 0 0 1-8-8V48c0-8 2-14 10-18z" fill="currentColor"/>',
+      book: '<rect x="20" y="14" width="56" height="72" rx="6" fill="currentColor"/><rect x="28" y="26" width="34" height="5" rx="2" fill="#fff" opacity=".7"/><rect x="28" y="36" width="24" height="5" rx="2" fill="#fff" opacity=".5"/>',
+      candle: '<rect x="30" y="38" width="40" height="50" rx="8" fill="currentColor"/><path d="M50 10c8 10 8 18 0 22-8-4-8-12 0-22z" fill="currentColor" opacity=".8"/>',
+      blanket: '<rect x="12" y="26" width="76" height="48" rx="10" fill="currentColor"/><path d="M12 40h76M12 52h76M12 64h76" stroke="#fff" stroke-width="3" opacity=".35"/>',
+      desk: '<rect x="8" y="34" width="84" height="10" rx="4" fill="currentColor"/><rect x="16" y="44" width="6" height="40" fill="currentColor"/><rect x="78" y="44" width="6" height="40" fill="currentColor"/><rect x="56" y="44" width="22" height="20" rx="3" fill="currentColor" opacity=".7"/>',
+    };
+    const PRODUCTS = [
+      { id: 1, name: "Arc Table Lamp", cat: "Lighting", price: 48500, was: 56000, icon: "lamp", bg: "#efe3cf", fg: "#b07b3a" },
+      { id: 2, name: "Stoneware Mug", cat: "Kitchen", price: 7500, icon: "mug", bg: "#dfe8e2", fg: "#2f6b52" },
+      { id: 3, name: "Lounge Chair", cat: "Living", price: 189000, icon: "chair", bg: "#e6dfd6", fg: "#6e5340" },
+      { id: 4, name: "Potted Monstera", cat: "Decor", price: 22000, icon: "plant", bg: "#e1ecd9", fg: "#3d7a3a" },
+      { id: 5, name: "Ceramic Vase", cat: "Decor", price: 15500, icon: "vase", bg: "#f0dfd8", fg: "#b4532a", tag: "New" },
+      { id: 6, name: "Minimal Wall Clock", cat: "Living", price: 18900, icon: "clock", bg: "#e2e4ea", fg: "#3b4560" },
+      { id: 7, name: "Cast Iron Pot", cat: "Kitchen", price: 64000, was: 72000, icon: "pot", bg: "#e5e2dc", fg: "#2a2622" },
+      { id: 8, name: "Glass Carafe", cat: "Kitchen", price: 12800, icon: "bottle", bg: "#dbe8ee", fg: "#2f6f8a" },
+      { id: 9, name: "Linen Notebook", cat: "Workspace", price: 5200, icon: "book", bg: "#ece4d3", fg: "#8a6a2f" },
+      { id: 10, name: "Soy Wax Candle", cat: "Decor", price: 9800, icon: "candle", bg: "#f3e6d6", fg: "#c0782f", tag: "New" },
+      { id: 11, name: "Woven Throw", cat: "Living", price: 34500, icon: "blanket", bg: "#e9dccf", fg: "#9a5b3c" },
+      { id: 12, name: "Oak Writing Desk", cat: "Workspace", price: 215000, was: 240000, icon: "desk", bg: "#ece2d2", fg: "#7a5a36" },
+      { id: 13, name: "Pendant Light", cat: "Lighting", price: 39000, icon: "lamp", bg: "#e6e1ef", fg: "#5a4a8a" },
+    ];
+    const CATS = ["All", ...Array.from(new Set(PRODUCTS.map((p) => p.cat)))];
+    const FREE_SHIP = 100000, SHIP = 3500;
+    const fmt = (n) => "₦" + n.toLocaleString("en-NG");
+    const $ = (s) => document.querySelector(s);
+    const art = (p) => '<svg viewBox="0 0 100 100" style="color:' + p.fg + '" aria-hidden="true">' + ICONS[p.icon] + "</svg>";
+
+    let state = { q: "", cat: "All", sort: "featured" };
+    let cart = load();
+
+    function load() { try { return JSON.parse(localStorage.getItem("lumen-cart")) || {}; } catch (e) { return {}; } }
+    function save() { try { localStorage.setItem("lumen-cart", JSON.stringify(cart)); } catch (e) {} }
+
+    function renderCats() {
+      $("#cats").innerHTML = CATS.map((c) => '<button class="cat" aria-pressed="' + (c === state.cat) + '" data-cat="' + c + '">' + c + "</button>").join("");
+    }
+    function renderGrid() {
+      const q = state.q.trim().toLowerCase();
+      let list = PRODUCTS.filter((p) => (state.cat === "All" || p.cat === state.cat) && (!q || (p.name + " " + p.cat).toLowerCase().includes(q)));
+      if (state.sort === "low") list.sort((a, b) => a.price - b.price);
+      if (state.sort === "high") list.sort((a, b) => b.price - a.price);
+      if (state.sort === "name") list.sort((a, b) => a.name.localeCompare(b.name));
+      $("#resultMsg").textContent = list.length + " products shown";
+      $("#grid").innerHTML = list.length ? list.map((p) =>
+        '<article class="card">' +
+          '<div class="art" style="background:' + p.bg + '">' + art(p) +
+            (p.was ? '<span class="tag sale">Sale</span>' : p.tag ? '<span class="tag">' + p.tag + "</span>" : "") + "</div>" +
+          '<div class="info"><small>' + p.cat + "</small><h3>" + p.name + "</h3>" +
+            '<div class="price"><strong>' + fmt(p.price) + "</strong>" + (p.was ? "<s>" + fmt(p.was) + "</s>" : "") + "</div>" +
+            '<button class="add" data-add="' + p.id + '" aria-label="Add ' + p.name + ' to cart">Add to cart</button>' +
+          "</div></article>").join("")
+        : '<div class="empty"><strong>No products found.</strong><br/>Try a different search or category.</div>';
+    }
+
+    function totals() {
+      const sub = Object.entries(cart).reduce((s, [id, q]) => s + PRODUCTS.find((p) => p.id == id).price * q, 0);
+      const ship = sub === 0 || sub >= FREE_SHIP ? 0 : SHIP;
+      return { sub, ship, total: sub + ship, count: Object.values(cart).reduce((a, b) => a + b, 0) };
+    }
+    function renderCart() {
+      const t = totals();
+      const badge = $("#count");
+      badge.textContent = t.count;
+      badge.setAttribute("aria-label", t.count + " item" + (t.count === 1 ? "" : "s"));
+      const ids = Object.keys(cart);
+      $("#lines").innerHTML = ids.length ? ids.map((id) => {
+        const p = PRODUCTS.find((x) => x.id == id);
+        return '<div class="line"><div class="thumb" style="background:' + p.bg + '">' + art(p) + "</div>" +
+          "<div><h4>" + p.name + "</h4><small>" + fmt(p.price) + "</small><br/>" +
+          '<div class="qty"><button data-dec="' + id + '" aria-label="Decrease quantity of ' + p.name + '">−</button><span>' + cart[id] + '</span><button data-inc="' + id + '" aria-label="Increase quantity of ' + p.name + '">+</button></div></div>' +
+          '<div style="text-align:right"><strong>' + fmt(p.price * cart[id]) + '</strong><br/><button class="remove" data-rm="' + id + '">Remove</button></div></div>';
+      }).join("") : '<div class="empty" style="margin-top:20px">Your cart is empty.</div>';
+      $("#sub").textContent = fmt(t.sub);
+      $("#ship").textContent = t.sub === 0 ? "—" : t.ship === 0 ? "Free" : fmt(t.ship);
+      $("#total").textContent = fmt(t.total);
+      $("#checkoutBtn").disabled = t.count === 0;
+    }
+
+    function toast(msg) {
+      const el = $("#toast"); el.textContent = msg; el.classList.add("show");
+      clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2000);
+    }
+
+    let lastFocus;
+    function openCart() {
+      lastFocus = document.activeElement;
+      document.getElementById("cartRoot").classList.add("open");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => $("#closeCart").focus(), 50);
+    }
+    function closeCart() {
+      document.getElementById("cartRoot").classList.remove("open");
+      document.body.style.overflow = "";
+      if (lastFocus) lastFocus.focus();
+    }
+
+    // Events
+    $("#q").addEventListener("input", (e) => { state.q = e.target.value; renderGrid(); });
+    $("#sort").addEventListener("change", (e) => { state.sort = e.target.value; renderGrid(); });
+    $("#cats").addEventListener("click", (e) => { const b = e.target.closest("[data-cat]"); if (b) { state.cat = b.dataset.cat; renderCats(); renderGrid(); } });
+    $("#grid").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-add]"); if (!b) return;
+      const id = b.dataset.add;
+      cart[id] = (cart[id] || 0) + 1; save(); renderCart();
+      b.textContent = "Added ✓"; b.classList.add("added");
+      setTimeout(() => { b.textContent = "Add to cart"; b.classList.remove("added"); }, 1200);
+      const badge = $("#count"); badge.classList.remove("bump"); void badge.offsetWidth; badge.classList.add("bump");
+      toast(PRODUCTS.find((p) => p.id == id).name + " added to cart");
+    });
+    $("#lines").addEventListener("click", (e) => {
+      const t = e.target.closest("button"); if (!t) return;
+      if (t.dataset.inc) cart[t.dataset.inc]++;
+      if (t.dataset.dec) { cart[t.dataset.dec]--; if (cart[t.dataset.dec] <= 0) delete cart[t.dataset.dec]; }
+      if (t.dataset.rm) delete cart[t.dataset.rm];
+      save(); renderCart();
+    });
+    $("#cartBtn").addEventListener("click", openCart);
+    $("#closeCart").addEventListener("click", closeCart);
+    $("#scrim").addEventListener("click", closeCart);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.getElementById("cartRoot").classList.contains("open")) closeCart(); });
+
+    // Checkout
+    const dlg = $("#checkout");
+    function checkoutForm() {
+      const t = totals();
+      $("#dlgBody").innerHTML =
+        '<h2 id="coTitle">Checkout</h2><p class="sub">' + t.count + " item" + (t.count === 1 ? "" : "s") + " · Total " + fmt(t.total) + " · Pay on delivery</p>" +
+        '<form id="coForm" novalidate><div class="fgrid">' +
+          field("name", "Full name", "text", "name", true) + field("phone", "Phone number", "tel", "tel") +
+          field("email", "Email", "email", "email", true) + field("address", "Delivery address", "text", "street-address", true) +
+          field("city", "City", "text", "address-level2") +
+          '<div class="f"><label for="co-state">State</label><select id="co-state" name="state"><option value="">Select…</option><option>Akwa Ibom</option><option>Lagos</option><option>Abuja (FCT)</option><option>Rivers</option><option>Other</option></select><span class="msg"></span></div>' +
+        '</div><div class="dlg-actions"><button type="button" class="ghost" id="coCancel">Cancel</button><button class="primary" type="submit">Place order · ' + fmt(t.total) + "</button></div></form>";
+      $("#coCancel").onclick = () => dlg.close();
+      $("#coForm").onsubmit = submitOrder;
+    }
+    function field(name, label, type, ac, full) {
+      return '<div class="f' + (full ? " full" : "") + '"><label for="co-' + name + '">' + label + '</label><input id="co-' + name + '" name="' + name + '" type="' + type + '" autocomplete="' + ac + '" /><span class="msg"></span></div>';
+    }
+    function submitOrder(e) {
+      e.preventDefault();
+      const f = e.target, checks = {
+        name: (v) => v.trim().length >= 2 || "Enter your name",
+        phone: (v) => /^(\+?234|0)[789][01]\d{8}$/.test(v.replace(/\s/g, "")) || "Enter a valid Nigerian phone number",
+        email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || "Enter a valid email",
+        address: (v) => v.trim().length >= 5 || "Enter your delivery address",
+        city: (v) => v.trim().length >= 2 || "Enter your city",
+        state: (v) => !!v || "Choose a state",
+      };
+      let first = null;
+      Object.keys(checks).forEach((k) => {
+        const el = f.elements[k], r = checks[k](el.value), wrap = el.closest(".f");
+        wrap.classList.toggle("err", r !== true);
+        wrap.querySelector(".msg").textContent = r === true ? "" : r;
+        el.setAttribute("aria-invalid", r !== true);
+        if (r !== true && !first) first = el;
+      });
+      if (first) { first.focus(); return; }
+      const ref = "LS-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+      const name = f.elements.name.value.trim().split(" ")[0];
+      cart = {}; save(); renderCart(); closeCart();
+      $("#dlgBody").innerHTML = '<div class="success"><div class="tick">✓</div><h2 id="coTitle">Thanks, ' + name.replace(/</g, "&lt;") + '!</h2><p class="sub">Demo order <strong>' + ref + '</strong> placed. In a real store you would now receive a confirmation email. Nothing was charged or stored on a server.</p><button class="primary" style="width:100%" id="done">Continue shopping</button></div>';
+      $("#done").onclick = () => dlg.close();
+      $("#done").focus();
+    }
+    $("#checkoutBtn").addEventListener("click", () => { checkoutForm(); if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", ""); setTimeout(() => $("#co-name") && $("#co-name").focus(), 30); });
+
+    renderCats(); renderGrid(); renderCart();
+  })();
+  </script>
+</body>
+</html>

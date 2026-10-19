@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Northwind Analytics — Dashboard Demo by Emediong Ndong Odiong</title>
+  <meta name="description" content="A working business analytics dashboard demo with KPIs, interactive charts and a sortable orders table. Built by Emediong Ndong Odiong." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f4f2; --surface-1: #fcfcfb; --surface-2: #f0f0ed; --line: #e4e3df; --grid: #ecebe7;
+      --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #7d7c77;
+      --series-1: #2a78d6; --series-1-soft: rgba(42, 120, 214, 0.12);
+      --good: #0f7a3d; --bad: #c03a39;
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #111110; --surface-1: #1a1a19; --surface-2: #232321; --line: #2e2e2b; --grid: #262624;
+      --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e86;
+      --series-1: #3987e5; --series-1-soft: rgba(57, 135, 229, 0.16);
+      --good: #4cc27e; --bad: #e66767;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text-primary); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    button, input { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; border-radius: 6px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .demo-bar { background: #0b0b0b; color: #c3c2b7; font-size: 13px; }
+    .demo-bar div { max-width: 1280px; margin: 0 auto; padding: 8px 20px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .demo-bar a { color: #fff; font-weight: 600; text-decoration: none; }
+    .demo-bar a:hover { text-decoration: underline; }
+    .app { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 37px); }
+    aside.side { background: var(--surface-1); border-right: 1px solid var(--line); padding: 20px 14px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; padding: 0 8px 20px; }
+    .logo i { width: 28px; height: 28px; border-radius: 8px; background: var(--series-1); display: inline-block; }
+    .side nav a { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; color: var(--text-secondary); text-decoration: none; font-weight: 500; }
+    .side nav a[aria-current] { background: var(--surface-2); color: var(--text-primary); }
+    .side nav a span { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid currentColor; opacity: .7; }
+    main { padding: 24px clamp(16px, 3vw, 32px) 48px; min-width: 0; }
+    .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 18px; }
+    h1 { margin: 0; font-size: 22px; letter-spacing: -0.02em; }
+    .top p { margin: 2px 0 0; color: var(--text-secondary); }
+    .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
+    .seg button { border: 0; background: none; padding: 6px 12px; border-radius: 7px; font-weight: 600; font-size: 13px; color: var(--text-secondary); }
+    .seg button[aria-pressed="true"] { background: var(--surface-1); color: var(--text-primary); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+    .icon-btn { height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-1); font-weight: 600; font-size: 13px; }
+    .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .card { background: var(--surface-1); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-width: 0; }
+    .kpi .label { color: var(--text-secondary); font-weight: 500; }
+    .kpi .value { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin-top: 6px; font-variant-numeric: tabular-nums; }
+    .delta { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; font-size: 12.5px; margin-top: 4px; }
+    .delta.up { color: var(--good); } .delta.down { color: var(--bad); }
+    .delta small { color: var(--text-muted); font-weight: 500; }
+    .charts { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 14px; margin-top: 14px; }
+    .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+    .card-head h2 { margin: 0; font-size: 15px; }
+    .card-head p { margin: 2px 0 0; color: var(--text-secondary); font-size: 13px; }
+    .link { border: 0; background: none; color: var(--series-1); font-weight: 600; font-size: 13px; padding: 0; }
+    .chart { position: relative; }
+    .chart svg { display: block; width: 100%; overflow: visible; }
+    .axis text { fill: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+    .gridline { stroke: var(--grid); stroke-width: 1; }
+    .tip { position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; box-shadow: 0 8px 24px rgba(0,0,0,.14); font-size: 12.5px; white-space: nowrap; opacity: 0; transition: opacity .12s; z-index: 2; }
+    .tip.show { opacity: 1; }
+    .tip b { display: block; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+    .tip span { color: var(--text-secondary); }
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    th { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+    th button { border: 0; background: none; padding: 0; font-weight: 600; color: inherit; display: inline-flex; gap: 4px; align-items: center; }
+    td.num, th.num { text-align: right; }
+    th.num button { flex-direction: row-reverse; }
+    tbody tr:hover { background: var(--surface-2); }
+    .status { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+    .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .st-paid { color: var(--good); } .st-pending { color: #b7791f; } .st-refunded { color: var(--text-muted); }
+    :root[data-theme="dark"] .st-pending { color: #e0a43a; }
+    .table-card { margin-top: 14px; }
+    .table-tools { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
+    .search { height: 36px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); padding: 0 12px; width: min(280px, 100%); }
+    .scroll { overflow-x: auto; }
+    .pager { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; color: var(--text-secondary); gap: 10px; flex-wrap: wrap; }
+    .pager div { display: flex; gap: 6px; }
+    .pager button { height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface-1); font-weight: 600; font-size: 13px; }
+    .pager button:disabled { opacity: .4; cursor: not-allowed; }
+    .bars .row { display: grid; grid-template-columns: 108px 1fr 48px; gap: 10px; align-items: center; padding: 7px 0; position: relative; }
+    .bars .name { color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bars .track { height: 14px; position: relative; }
+    .bars .bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--series-1); border-radius: 0 4px 4px 0; transition: width .5s cubic-bezier(.22,1,.36,1); }
+    .bars .val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .bars .row:hover .bar, .bars .row:focus-within .bar { filter: brightness(1.1); }
+    .bars .row:hover .name { color: var(--text-primary); }
+    @media (max-width: 1080px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .charts { grid-template-columns: 1fr; } }
+    @media (max-width: 760px) { .app { grid-template-columns: 1fr; } aside.side { display: none; } }
+    @media (max-width: 460px) { .kpis { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="demo-bar"><div><span>🧪 Demo project with generated sample data.</span><a href="../../project.html?p=business-analytics-dashboard">← Case study &amp; portfolio</a></div></div>
+  <div class="app">
+    <aside class="side">
+      <div class="logo"><i></i>Northwind</div>
+      <nav aria-label="Dashboard sections (demo)">
+        <a href="#" aria-current="page"><span></span>Overview</a>
+        <a href="#orders"><span></span>Orders</a>
+        <a href="#categories"><span></span>Categories</a>
+      </nav>
+    </aside>
+    <main>
+      <div class="top">
+        <div><h1>Sales overview</h1><p id="rangeLabel"></p></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Date range" id="range">
+            <button data-days="7" aria-pressed="false">7 days</button>
+            <button data-days="30" aria-pressed="true">30 days</button>
+            <button data-days="90" aria-pressed="false">90 days</button>
+          </div>
+          <button class="icon-btn" id="theme" aria-label="Switch to dark theme">Dark mode</button>
+        </div>
+      </div>
+
+      <section class="kpis" id="kpis" aria-label="Key metrics"></section>
+
+      <section class="charts">
+        <div class="card">
+          <div class="card-head"><div><h2 id="revTitle">Revenue</h2><p>Daily revenue, Nigerian naira</p></div><button class="link" id="toggleTable" aria-controls="revTable" aria-expanded="false">View as table</button></div>
+          <div class="chart" id="lineChart"></div>
+          <div class="scroll" id="revTable" hidden></div>
+        </div>
+        <div class="card" id="categories">
+          <div class="card-head"><div><h2>Revenue by category</h2><p>Share of the selected period</p></div></div>
+          <div class="bars" id="bars"></div>
+        </div>
+      </section>
+
+      <section class="card table-card" id="orders">
+        <div class="table-tools">
+          <div class="card-head" style="margin:0"><div><h2>Recent orders</h2><p id="ordersCount"></p></div></div>
+          <label><span class="sr-only">Search orders</span><input class="search" id="search" type="search" placeholder="Search customer, order or category…" /></label>
+        </div>
+        <div class="scroll"><table id="table"><caption class="sr-only">Orders in the selected period</caption></table></div>
+        <div class="pager"><span id="pageInfo"></span><div><button id="prev">Previous</button><button id="next">Next</button></div></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+  (function () {
+    "use strict";
+    // ---------- Deterministic sample data ----------
+    let seed = 20481;
+    const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+    const CATS = ["Electronics", "Fashion", "Home & Living", "Beauty", "Groceries", "Sports"];
+    const CAT_W = [1.6, 1.25, 1, 0.75, 0.6, 0.45];
+    const FIRST = ["Ada", "Chinedu", "Fatima", "Ibrahim", "Ngozi", "Tunde", "Aniekan", "Blessing", "Emeka", "Halima", "Kemi", "Uduak", "Yusuf", "Zainab", "Ifeoma", "Segun"];
+    const LAST = ["Okafor", "Bello", "Etim", "Adeyemi", "Musa", "Eze", "Okon", "Afolabi", "Nwosu", "Udoh", "Lawal", "Obi"];
+    const DAYS = 180;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const orders = [];
+    let oid = 10480;
+    for (let d = DAYS - 1; d >= 0; d--) {
+      const date = new Date(today); date.setDate(date.getDate() - d);
+      const dow = date.getDay();
+      const trend = 1 + (DAYS - d) / DAYS * 0.35;
+      const n = Math.round((dow === 0 ? 7 : dow === 6 ? 14 : 10) * trend * (0.75 + rand() * 0.5));
+      for (let i = 0; i < n; i++) {
+        let r = rand() * CAT_W.reduce((a, b) => a + b, 0), c = 0;
+        while (r > CAT_W[c]) { r -= CAT_W[c]; c++; }
+        const amount = Math.round((8000 + rand() * rand() * 140000) / 100) * 100;
+        const s = rand();
+        orders.push({ id: "NW-" + (oid++), date, customer: FIRST[Math.floor(rand() * FIRST.length)] + " " + LAST[Math.floor(rand() * LAST.length)], category: CATS[c], amount, status: s < 0.82 ? "Paid" : s < 0.95 ? "Pending" : "Refunded", newCustomer: rand() < 0.28 });
+      }
+    }
+
+    // ---------- Helpers ----------
+    const $ = (s) => document.querySelector(s);
+    const naira = (n) => "₦" + Math.round(n).toLocaleString("en-NG");
+    const compact = (n) => n >= 1e6 ? "₦" + (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + "M" : n >= 1e3 ? "₦" + Math.round(n / 1e3) + "k" : "₦" + n;
+    const fdate = (d, long) => d.toLocaleDateString("en-GB", long ? { weekday: "short", day: "numeric", month: "short", year: "numeric" } : { day: "numeric", month: "short" });
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+    let st = { days: 30, sortKey: "date", sortDir: -1, q: "", page: 0 };
+    const PER_PAGE = 10;
+
+    function inRange(days, offset) {
+      const end = new Date(today); end.setDate(end.getDate() - offset * days);
+      const start = new Date(end); start.setDate(start.getDate() - days + 1);
+      return orders.filter((o) => o.date >= start && o.date <= end);
+    }
+    function stats(list) {
+      const valid = list.filter((o) => o.status !== "Refunded");
+      const revenue = valid.reduce((s, o) => s + o.amount, 0);
+      return { revenue, orders: list.length, aov: valid.length ? revenue / valid.length : 0, newCustomers: list.filter((o) => o.newCustomer).length };
+    }
+
+    // ---------- KPIs ----------
+    function renderKpis() {
+      const cur = stats(inRange(st.days, 0)), prev = stats(inRange(st.days, 1));
+      const items = [["Revenue", naira(cur.revenue), cur.revenue, prev.revenue], ["Orders", cur.orders.toLocaleString(), cur.orders, prev.orders], ["Avg. order value", naira(cur.aov), cur.aov, prev.aov], ["New customers", cur.newCustomers.toLocaleString(), cur.newCustomers, prev.newCustomers]];
+      $("#kpis").innerHTML = items.map(([label, val, c, p]) => {
+        const ch = p ? ((c - p) / p) * 100 : 0, up = ch >= 0;
+        return '<div class="card kpi"><div class="label">' + label + '</div><div class="value">' + val + '</div><div class="delta ' + (up ? "up" : "down") + '">' + (up ? "▲" : "▼") + " " + Math.abs(ch).toFixed(1) + "% <small>vs previous " + st.days + " days</small></div></div>";
+      }).join("");
+      const start = new Date(today); start.setDate(start.getDate() - st.days + 1);
+      $("#rangeLabel").textContent = fdate(start, true) + " – " + fdate(today, true);
+    }
+
+    // ---------- Line chart ----------
+    let series = [];
+    function renderLine() {
+      const box = $("#lineChart");
+      const W = Math.max(280, box.clientWidth), H = 260, m = { t: 14, r: 12, b: 28, l: 52 };
+      series = [];
+      for (let i = st.days - 1; i >= 0; i--) {
+        const d = new Date(today); d.setDate(d.getDate() - i);
+        const v = orders.filter((o) => +o.date === +d && o.status !== "Refunded").reduce((s, o) => s + o.amount, 0);
+        series.push({ d, v });
+      }
+      const max = Math.max(...series.map((p) => p.v)) * 1.1;
+      const step = niceStep(max / 4);
+      const top = Math.ceil(max / step) * step;
+      const x = (i) => m.l + (i / (series.length - 1)) * (W - m.l - m.r);
+      const y = (v) => m.t + (1 - v / top) * (H - m.t - m.b);
+      let grid = "";
+      for (let v = 0; v <= top + 1; v += step) grid += '<line class="gridline" x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="' + (m.l - 8) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + compact(v) + "</text>";
+      const ticks = Math.min(6, series.length);
+      let xt = "";
+      for (let k = 0; k < ticks; k++) {
+        const i = Math.round((k / (ticks - 1)) * (series.length - 1));
+        xt += '<text x="' + x(i) + '" y="' + (H - 8) + '" text-anchor="' + (k === 0 ? "start" : k === ticks - 1 ? "end" : "middle") + '">' + fdate(series[i].d) + "</text>";
+      }
+      const path = series.map((p, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p.v).toFixed(1)).join(" ");
+      const area = path + " L" + x(series.length - 1) + " " + y(0) + " L" + x(0) + " " + y(0) + " Z";
+      const total = series.reduce((s, p) => s + p.v, 0);
+      box.innerHTML =
+        '<svg viewBox="0 0 ' + W + " " + H + '" height="' + H + '" role="img" aria-label="Daily revenue over the last ' + st.days + " days, total " + naira(total) + '">' +
+          '<g class="axis">' + grid + xt + "</g>" +
+          '<path d="' + area + '" fill="var(--series-1-soft)"/>' +
+          '<path d="' + path + '" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+          '<line id="cross" y1="' + m.t + '" y2="' + (H - m.b) + '" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>' +
+          '<circle id="dot" r="5" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2" opacity="0"/>' +
+          '<rect id="hit" x="' + m.l + '" y="0" width="' + (W - m.l - m.r) + '" height="' + H + '" fill="transparent"/>' +
+        '</svg><div class="tip" id="tip"></div>';
+      const svg = box.querySelector("svg"), hit = box.querySelector("#hit"), tip = box.querySelector("#tip"), cross = box.querySelector("#cross"), dot = box.querySelector("#dot");
+      const show = (i) => {
+        const p = series[i], px = x(i), py = y(p.v);
+        cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.setAttribute("opacity", 1);
+        dot.setAttribute("cx", px); dot.setAttribute("cy", py); dot.setAttribute("opacity", 1);
+        tip.innerHTML = "<span>" + fdate(p.d, true) + "</span><b>" + naira(p.v) + "</b>";
+        const scale = svg.getBoundingClientRect().width / W;
+        tip.classList.add("show");
+        const tw = tip.offsetWidth;
+        tip.style.left = Math.min(Math.max(px * scale - tw / 2, 0), box.clientWidth - tw) + "px";
+        tip.style.top = Math.max(py * scale - 62, 0) + "px";
+      };
+      const hide = () => { tip.classList.remove("show"); cross.setAttribute("opacity", 0); dot.setAttribute("opacity", 0); };
+      const idxFromEvent = (e) => {
+        const r = svg.getBoundingClientRect();
+        const px = (e.clientX - r.left) * (W / r.width);
+        return Math.max(0, Math.min(series.length - 1, Math.round(((px - m.l) / (W - m.l - m.r)) * (series.length - 1))));
+      };
+      hit.addEventListener("pointermove", (e) => show(idxFromEvent(e)));
+      hit.addEventListener("pointerleave", hide);
+      // Keyboard access: focus the chart, use arrow keys
+      box.tabIndex = 0;
+      box.setAttribute("aria-describedby", "revTitle");
+      let ki = series.length - 1;
+      box.onkeydown = (e) => {
+        if (e.key === "ArrowLeft") ki = Math.max(0, ki - 1); else if (e.key === "ArrowRight") ki = Math.min(series.length - 1, ki + 1); else return;
+        e.preventDefault(); show(ki);
+      };
+      box.onblur = hide;
+      renderRevTable();
+    }
+    function niceStep(raw) {
+      const p = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / p;
+      return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
+    }
+    function renderRevTable() {
+      $("#revTable").innerHTML = '<table><thead><tr><th>Date</th><th class="num">Revenue</th></tr></thead><tbody>' +
+        series.slice().reverse().map((p) => "<tr><td>" + fdate(p.d, true) + '</td><td class="num">' + naira(p.v) + "</td></tr>").join("") + "</tbody></table>";
+    }
+    $("#toggleTable").onclick = () => {
+      const t = $("#revTable"), open = t.hidden;
+      t.hidden = !open; $("#lineChart").hidden = open;
+      $("#toggleTable").textContent = open ? "View as chart" : "View as table";
+      $("#toggleTable").setAttribute("aria-expanded", open);
+    };
+
+    // ---------- Category bars ----------
+    function renderBars() {
+      const list = inRange(st.days, 0).filter((o) => o.status !== "Refunded");
+      const total = list.reduce((s, o) => s + o.amount, 0);
+      const rows = CATS.map((c) => ({ c, v: list.filter((o) => o.category === c).reduce((s, o) => s + o.amount, 0) })).sort((a, b) => b.v - a.v);
+      const max = rows[0].v || 1;
+      $("#bars").innerHTML = rows.map((r) =>
+        '<div class="row" tabindex="0" title="' + r.c + ": " + naira(r.v) + " (" + (total ? (r.v / total * 100).toFixed(1) : 0) + '%)"><span class="name">' + r.c + '</span><span class="track"><span class="bar" style="width:' + (r.v / max * 100) + '%"></span></span><span class="val">' + (total ? (r.v / total * 100).toFixed(0) : 0) + "%</span></div>"
+      ).join("");
+    }
+
+    // ---------- Orders table ----------
+    const COLS = [["id", "Order"], ["date", "Date"], ["customer", "Customer"], ["category", "Category"], ["status", "Status"], ["amount", "Amount", true]];
+    function renderTable() {
+      const q = st.q.trim().toLowerCase();
+      let list = inRange(st.days, 0).filter((o) => !q || (o.id + " " + o.customer + " " + o.category + " " + o.status).toLowerCase().includes(q));
+      list.sort((a, b) => { const A = a[st.sortKey], B = b[st.sortKey]; return (A > B ? 1 : A < B ? -1 : 0) * st.sortDir; });
+      const pages = Math.max(1, Math.ceil(list.length / PER_PAGE));
+      st.page = Math.min(st.page, pages - 1);
+      const view = list.slice(st.page * PER_PAGE, (st.page + 1) * PER_PAGE);
+      $("#table").innerHTML = '<caption class="sr-only">Orders in the selected period</caption><thead><tr>' + COLS.map(([k, label, num]) => {
+        const on = st.sortKey === k;
+        return '<th class="' + (num ? "num" : "") + '" aria-sort="' + (on ? (st.sortDir > 0 ? "ascending" : "descending") : "none") + '"><button data-sort="' + k + '">' + label + ' <span aria-hidden="true">' + (on ? (st.sortDir > 0 ? "↑" : "↓") : "↕") + "</span></button></th>";
+      }).join("") + "</tr></thead><tbody>" +
+        (view.length ? view.map((o) => "<tr><td>" + o.id + "</td><td>" + fdate(o.date) + "</td><td>" + esc(o.customer) + "</td><td>" + o.category + '</td><td><span class="status st-' + o.status.toLowerCase() + '">' + o.status + '</span></td><td class="num">' + naira(o.amount) + "</td></tr>").join("")
+          : '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted)">No orders match your search.</td></tr>') + "</tbody>";
+      $("#ordersCount").textContent = list.length.toLocaleString() + " orders";
+      $("#pageInfo").textContent = list.length ? "Showing " + (st.page * PER_PAGE + 1) + "–" + Math.min(list.length, (st.page + 1) * PER_PAGE) + " of " + list.length : "";
+      $("#prev").disabled = st.page === 0; $("#next").disabled = st.page >= pages - 1;
+    }
+    $("#table").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-sort]"); if (!b) return;
+      const k = b.dataset.sort;
+      st.sortDir = st.sortKey === k ? -st.sortDir : (k === "amount" || k === "date" ? -1 : 1);
+      st.sortKey = k; renderTable();
+      document.querySelector('[data-sort="' + k + '"]').focus();
+    });
+    $("#search").addEventListener("input", (e) => { st.q = e.target.value; st.page = 0; renderTable(); });
+    $("#prev").onclick = () => { st.page--; renderTable(); };
+    $("#next").onclick = () => { st.page++; renderTable(); };
+
+    $("#range").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-days]"); if (!b) return;
+      st.days = Number(b.dataset.days); st.page = 0;
+      document.querySelectorAll("#range button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+      renderAll();
+    });
+
+    // Theme
+    function setTheme(t) {
+      document.documentElement.dataset.theme = t;
+      $("#theme").textContent = t === "dark" ? "Light mode" : "Dark mode";
+      $("#theme").setAttribute("aria-label", "Switch to " + (t === "dark" ? "light" : "dark") + " theme");
+      try { localStorage.setItem("nw-theme", t); } catch (e) {}
+    }
+    let saved = null; try { saved = localStorage.getItem("nw-theme"); } catch (e) {}
+    setTheme(saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+    $("#theme").onclick = () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+
+    function renderAll() { renderKpis(); renderLine(); renderBars(); renderTable(); }
+    let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderLine, 120); });
+    renderAll();
+  })();
+  </script>
+</body>
+</html>

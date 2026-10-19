@@ -597,6 +597,8 @@ select.input option { background: var(--surface); color: var(--text); }
 .footer-col h4 { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); font-weight: 500; margin-bottom: 14px; }
 .footer-col ul { display: grid; gap: 8px; }
 .footer-col a { color: var(--text-2); font-size: 0.92rem; transition: color 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+.footer-col { min-width: 0; }
+.footer-col a { overflow-wrap: anywhere; }
 .footer-col a:hover { color: var(--text); }
 .socials { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
 .footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-3); font-size: 0.85rem; }

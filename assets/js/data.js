@@ -59,7 +59,7 @@ window.PORTFOLIO = {
     whatsappMessage: "Hello Emediong, I found your portfolio and I'd like to talk about a project.",
 
     // Optional — leave "" to hide.
-    email: "",
+    email: "emediongodiong001@gmail.com",
     location: "",          // e.g. "Uyo, Nigeria" — only if you want it public
     cvUrl: "",             // e.g. "assets/files/Emediong-Odiong-CV.pdf"
 
@@ -135,16 +135,16 @@ window.PORTFOLIO = {
       tags: ["Accuracy", "Excel", "Record Keeping", "Confidentiality"],
     },
     {
-      role: "IT Professional",
+      role: "IT Personnel & Data Entry",
       company: "Deacons Publishers",
       period: "",
       type: "IT Support",
       points: [
-        "Support the organisation's day-to-day technology needs.",
-        "Help colleagues resolve computer and software issues.",
-        "Edit these points to describe your specific responsibilities at Deacons Publishers.",
+        "Serve as IT personnel, supporting the organisation's day-to-day technology needs.",
+        "Help colleagues resolve computer and software issues so work keeps moving.",
+        "Handle data entry, keeping records accurate, organised and up to date.",
       ],
-      tags: ["IT Support", "Troubleshooting"],
+      tags: ["IT Support", "Troubleshooting", "Data Entry"],
     },
   ],
 
